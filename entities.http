@@ -1,0 +1,4 @@
+### Get clients
+GET {{app_url}}/api/v1/entity/client?fields[]=id&fields[]=title&limit=10
+Authorization: Bearer {{token}}
+###

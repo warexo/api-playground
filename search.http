@@ -1,0 +1,28 @@
+### Find products
+POST {{app_url}}/api/v1/searchentity/product
+X-Client-Id: {{client_id}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "limit": 10,
+  "fields": ["sku", "price", "fulltitle", "vendor", "amazonproducttype", "clients.title"],
+  "filter": [
+    {
+      "field": "sku",
+      "operator": "STARTSWITH",
+      "value": "BH4"
+    },
+    {
+      "field": "price",
+      "operator": "GREQ",
+      "value": "5"
+    },
+    {
+      "field": "vendorproducts.vendor.title",
+      "operator": "EQ",
+      "value": "Ich AG"
+    }
+  ]
+}
+###

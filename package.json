@@ -1,0 +1,68 @@
+{
+  "name": "warexo-api-playground",
+  "version": "1.0.0",
+  "description": "Interactive API Playground for the Warexo ERP System",
+  "author": "Warexo",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "node server/index.js",
+    "build": "vite build",
+    "preview": "node server/index.js",
+    "electron:dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npx wait-on http://localhost:5173 && npx electron electron/main.js\"",
+    "electron:build": "npm run build && electron-builder",
+    "electron:build:all": "npm run build && electron-builder --mac --win --linux"
+  },
+  "build": {
+    "appId": "com.warexo.api-playground",
+    "productName": "Warexo API Playground",
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist/electron"
+    },
+    "files": [
+      "electron/**/*",
+      "server/**/*",
+      "dist/web/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        { "target": "dmg", "arch": ["arm64", "x64"] }
+      ],
+      "identity": null
+    },
+    "win": {
+      "target": [
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "linux": {
+      "target": [
+        { "target": "AppImage", "arch": ["x64"] }
+      ]
+    }
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.6",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "concurrently": "^9.1.2",
+    "electron": "^40.2.1",
+    "electron-builder": "^26.7.0",
+    "tailwindcss": "^4.0.6",
+    "vite": "^6.1.0",
+    "wait-on": "^9.0.3"
+  }
+}

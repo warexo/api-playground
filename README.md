@@ -1,118 +1,100 @@
-# Warexo ERP System – API Playground
+# Warexo API Playground
 
-This repository is a small IntelliJ / PhpStorm HTTP Client example project for the **Warexo ERP System API**. It contains ready-to-run HTTP request files and an environment setup to safely experiment with the API on your local machine.
+Interactive graphical tool for exploring and testing the **Warexo ERP System API**. Built with React, Tailwind CSS, and an Express CORS proxy.
 
-## Contents
+## Features
 
-- `authentication.http` – Example authentication and login requests.
-- `entities.http` – Requests for core entities (for example customers, items, documents).
-- `search.http` – Search, filter, and listing examples.
-- `http-client.env.json` – Template environment file (tracked, contains non-secret placeholders).
-- `http-client.private.env.json` – Local environment file for secrets (ignored by Git).
+- **Environment Manager** – Save multiple API connections (Dev, Staging, Prod) and switch between them instantly. Import/Export as JSON.
+- **Authentication** – Login with username/password, automatic JWT token refresh on expiry.
+- **Client Selector** – After login, choose which client to work with (`X-Client-Id` header).
+- **Entity Browser** – Browse all 325+ entities from the Warexo ERP, grouped by bundle, with full column and relation metadata.
+- **Relation Tree Picker** – Navigate entity relations by clicking through the tree to build dot-notation field paths (e.g. `categories.title`, `vendorproducts.vendor.title`).
+- **Request Builder** – Full CRUD support:
+  - `GET /entity/{type}` – List entities with field selection, limit, offset
+  - `GET /entity/{type}/{id}` – Fetch single entity
+  - `POST /searchentity/{type}` – Advanced search with filters and operators
+  - `POST /entity/{type}` – Create entities (single or bulk)
+  - `PATCH /entity/{type}/{id}` – Update entities
+  - `DELETE /entity/{type}/{id}` – Delete entities
+- **Filter Builder** – Visual filter construction with operators (EQ, CONTAINS, STARTSWITH, GT, LT, ISNULL, etc.)
+- **Response Viewer** – Syntax-highlighted JSON with collapsible nodes, headers view, status/duration/size info.
+- **Request History** – Per-environment history with favorites/bookmarks.
+- **cURL Preview** – Copy-paste ready cURL commands for every request.
+- **Electron-ready** – Architecture prepared for packaging as a standalone desktop app.
 
-## Prerequisites
+## Getting Started
 
-- IntelliJ IDEA or PhpStorm with the built-in HTTP Client
-- Access credentials for the Warexo ERP System API
-- Git (optional, for cloning and version control)
+### Prerequisites
 
-## http-client.env.json
+- [Node.js](https://nodejs.org/) 18+ installed
+- Access credentials for a Warexo ERP instance
 
-The file `http-client.env.json` is a **template** for your HTTP Client environments. It is checked into version control and should only contain placeholder or non-sensitive values.
+### Installation
 
-Example content:
-
-```json
-{
-  "dev": {
-    "app_url": "",
-    "client_id": "",
-    "username": "",
-    "password": ""
-  }
-}
+```bash
+npm install
 ```
 
-### Fields
+### Development
 
-- `dev`  
-  The name of the environment. You can add more environments (e.g. `stage`, `prod`) as additional top-level objects.
+```bash
+npm run dev
+```
 
-- `app_url`  
-  Base URL of the Warexo ERP API instance you want to call. Include the scheme (`https://`).  
-  Example: `https://warexo-dev.example.com`.
+This starts both the Express proxy server (port 3001) and the Vite dev server (port 5173). Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-- `client_id`
-  *(currently unused, enter warexo)*
-  Client identifier for the API (for example OAuth client ID or application ID) used by authentication flows that require a client credential.
+### Production Build
 
-- `username`  
-  Warexo Username
+```bash
+npm run build
+npm run preview
+```
 
-- `password`  
-  Password for the `username`. This is **sensitive** and must **not** be stored in the tracked `http-client.env.json` file when you use real credentials.
+Builds the React app and serves it via the Express proxy server.
 
-In this repository, `http-client.env.json` is intended as a template only. Put real values into `http-client.private.env.json`.
+### Setup
 
-## Creating http-client.private.env.json
+1. Click the environment selector in the top bar and create a new environment
+2. Enter your Warexo API URL (e.g. `https://your-instance.warexo.com`), username, and password
+3. Click **Connect** to authenticate
+4. Select a client from the dropdown (if multiple clients are available)
+5. Choose an entity from the sidebar and start building requests
 
-To work with real data you create a private copy of the template and fill in your own values.
+## Architecture
 
-1. **Create the private file from the template**
+```
+├── docs/examples/        ← IntelliJ HTTP Client examples (legacy)
+├── electron/             ← Electron main process (desktop app)
+│   └── main.js
+├── server/               ← Express CORS proxy
+│   └── index.js
+├── src/                  ← React application
+│   ├── components/       ← UI components
+│   ├── contexts/         ← React Context providers (Auth, Environment, Entity)
+│   └── utils/            ← API client, entity utilities, storage helpers
+├── package.json
+├── vite.config.js
+└── index.html
+```
 
-   In the project root, copy the template:
+### CORS Proxy
 
-   ```bash
-   cp http-client.env.json http-client.private.env.json
-   ```
+The Express proxy server solves CORS issues by forwarding API requests. Each request includes an `X-Target-Url` header specifying the target Warexo instance, allowing multiple environments without server restarts.
 
-2. **Edit the private environment**
+### Entity Metadata
 
-   Open `http-client.private.env.json` in your editor or IDE and replace the empty strings / placeholders:
+Entity definitions (columns, relations, types) are loaded from [warexo.github.io/entity-docs](https://warexo.github.io/entity-docs/data/entities.json) at startup. This enables the field picker, relation tree navigation, and type hints in the request builder.
 
-   - Set `app_url` to the actual Warexo ERP API base URL.
-   - Set `client_id` to the real client ID (if required).
-   - Set `username` and `password` to credentials that are valid for your test or development environment.
-   - Add additional fields if needed (for example `client_secret`, `token_url`, `warehouse_id`, …) and reference them in the `.http` files via `{{variable_name}}`.
+## IntelliJ HTTP Client Examples
 
-3. **Git ignore behavior**
+The original HTTP Client request files are preserved in `docs/examples/` for users who prefer the IntelliJ/PhpStorm HTTP Client workflow. See the files there for simple request templates.
 
-   The file `http-client.private.env.json` is already listed in `.gitignore` and is **not** committed to the repository. Do not force-add it.
+## Roadmap
 
-   If it was accidentally committed in the past, remove it from the Git index:
+- [ ] **Grid Explorer** – UI for `/api/v1/grid/{id}/{page}`: paginated list views with sorting and search fields
+- [ ] **Form Renderer** – UI for `/api/v1/renderform/{form}/{entity}/{grid}`: render declarative ERP forms as interactive input masks
+- [ ] **Electron Packaging** – Build and distribute as a standalone desktop application
 
-   ```bash
-   git rm --cached http-client.private.env.json
-   git commit -m "Remove private HTTP client env file from repo"
-   ```
+## License
 
-## Using the HTTP Client
-
-1. Open one of the HTTP files in IntelliJ IDEA or PhpStorm:
-   - `authentication.http`
-   - `entities.http`
-   - `search.http`
-
-2. Select the environment that corresponds to your configuration (for example `dev` in `http-client.private.env.json`).
-
-3. Click the **Run** icon next to a request to execute it.
-
-4. Inspect the response in the built-in HTTP Client response panel (status code, headers, body).
-
-## Typical workflow
-
-1. Copy `http-client.env.json` to `http-client.private.env.json` (once per developer / machine).
-2. Fill in real values for your development or test environment in the private file.
-3. Start with `authentication.http` to verify that authentication and tokens work. Login method will store tokens for subsequent requests.
-4. Use `entities.http` and `search.http` to read, create, update, or search data in your Warexo ERP instance.
-
-## Security notes
-
-- Keep **real** credentials and tokens only in `http-client.private.env.json` on your local machine.
-- Do **not** store secrets in `http-client.env.json` or any other tracked file.
-- Do not share `http-client.private.env.json` via Git, email, or chat.
-- Rotate API keys, passwords, and tokens according to your organization’s security policies.
-
-## Support
-
-This repository is an internal playground for the Warexo ERP System API. For questions about endpoints, authentication, or available data, refer to the internal API documentation or contact the Warexo backend / DevOps team.
+MIT

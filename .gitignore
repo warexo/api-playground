@@ -1,2 +1,19 @@
-*.private.env.json
+# IDE
 .idea/
+.vscode/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Electron
+out/
+
+# Environment files (may contain secrets)
+*.private.env.json
+
+# OS files
+.DS_Store
+Thumbs.db

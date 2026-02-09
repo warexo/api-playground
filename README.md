@@ -93,7 +93,6 @@ The original HTTP Client request files are preserved in `docs/examples/` for use
 
 - [ ] **Grid Explorer** – UI for `/api/v1/grid/{id}/{page}`: paginated list views with sorting and search fields
 - [ ] **Form Renderer** – UI for `/api/v1/renderform/{form}/{entity}/{grid}`: render declarative ERP forms as interactive input masks
-- [ ] **Electron Packaging** – Build and distribute as a standalone desktop application
 
 ## License
 
